@@ -7,6 +7,7 @@
 #include "pros/misc.h"
 #include "pros/motors.hpp"
 #include "pros/rtos.h"
+#include "pros/rtos.hpp"
 pros::MotorGroup left_motors({ -19, 18,-17}, pros::MotorGearset::blue); // left motors on ports 1, 2, 3
 pros::MotorGroup right_motors({13, -11, 12}, pros::MotorGearset::blue); // right motors on ports 4, 5, 6   
 pros::Motor conveyor(14, pros::MotorGearset::green);        
@@ -34,21 +35,20 @@ lemlib::OdomSensors sensors(nullptr, // vertical tracking wheel 1, set to null
                             &imu // inertial sensor
 );
 // lateral PID controller
-lemlib::ControllerSettings lateral_controller(8, // proportional gain (kP)
+lemlib::ControllerSettings lateral_controller(10, // proportional gain (kP)
+                                              0, // integral gain (kI)
+                                              3, // derivative gain (kD)
+                                              3, // anti windup
+                                              1, // small error range, in inches
+                                              100, // small error range timeout, in milliseconds
+                                              3, // large error range, in inches
+                                              500, // large error range timeout, in milliseconds
+                                              20 // maximum acceleration (slew)
+);
+// angular PID controller
+lemlib::ControllerSettings angular_controller(2  , // proportional gain (kP)
                                               0, // integral gain (kI)
                                               10, // derivative gain (kD)
-                                              0, // anti windup
-                                              0, // small error range, in inches
-                                              0, // small error range timeout, in milliseconds
-                                              0, // large error range, in inches
-                                              0, // large error range timeout, in milliseconds
-                                              0 // maximum acceleration (slew)
-);
-
-// angular PID controller
-lemlib::ControllerSettings angular_controller(6  , // proportional gain (kP)
-                                              0, // integral gain (kI)
-                                              30, // derivative gain (kD)
                                               3, // anti windup
                                               1, // small error range, in degrees
                                               100, // small error range timeout, in milliseconds
@@ -137,24 +137,51 @@ void competition_initialize() {}
 
 
 void autonomous() { 
-    /*
+    
     int ally = 1000;
-    chassis.setPose(58.5,8.165,315);
-    chassis.moveToPose(62.6, 4.97, 315, 100000,   {.forwards=false});
-   // conveyor.move(127);
-    chassis.turnToPoint(35, 18.3, 1000, {.forwards=false});  
-    chassis.moveToPoint(35, 18.3, 1000,{.forwards=false});
- //   clamp.set_value(true);
-    chassis.turnToPoint(27.1, 38.6, 1000);
-  //  fsintake.move(127);
-    chassis.moveToPoint(27.1, 38.6, 2000);
-    chassis.turnToPoint(60.9, 60.7, 1000);
-    chassis.moveToPoint(60.9, 60.7, 2000);
-    chassis.turnToPoint(28.2, 7.2, 1000);
+  //  chassis.setPose(58.5,8.165,315);
+    //chassis.moveToPose(62.6, 4.97, 315, 2000,   {.forwards=false});
+    
+
+    chassis.setPose(58,12,0);
+    chassis.moveToPose(58, 0, 0, 2000, {.forwards=false});
+    chassis.turnToHeading(270, 1000);
+    pros::delay(1000);
+    right_motors.move(-30);
+    left_motors.move(-30);
+    pros::delay(300);
+    right_motors.move(0);
+    left_motors.move(0);
+    
+    conveyor.move(127);
+    pros::delay(2000);
+    right_motors.move(30);
+    left_motors.move(30);
+    pros::delay(300);
+    right_motors.move(0);
+    left_motors.move(0);
+    
+    chassis.turnToPoint(33, 23, 1000, {.forwards=false});  
+    //chassis.moveToPoint(33, 23, 3000,{.forwards=false});
+    pros::delay(1001);
+    right_motors.move(-50);
+    left_motors.move(-50);
+    pros::delay(1500);
+    clamp.set_value(true);
+    pros::delay(300);
+    right_motors.move(0);
+    left_motors.move(0);
+    pros::delay(1000);
+    chassis.turnToPoint(24, 41, 2000);
+    fsintake.move(127);
+    chassis.moveToPoint(24, 41, 3000);
+    chassis.turnToPoint(65, 66.4, 2000);
+    chassis.moveToPoint(65, 66.4, 3000);
+    chassis.turnToPoint(28.2, 7.2, 2000);
     chassis.moveToPoint(28.2, 7.2, 3000);
-*/
-    chassis.setPose(0,0,0);
-    chassis.moveToPose(0,24, 0, 1000);
+
+   // chassis.setPose(0,0,0);
+    //chassis.moveToPose(0,24, 0, 1000);
 
 
 
